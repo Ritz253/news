@@ -29,9 +29,6 @@ jobs:
       - name: Run digest script
         env:
           GNEWS_API_KEY: ${{ secrets.GNEWS_API_KEY }}
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
-          GMAIL_APP_PASS: ${{ secrets.GMAIL_APP_PASS }}
-          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
         run: python news_digest.py
 
       - name: Publish digest.txt back to the repo
