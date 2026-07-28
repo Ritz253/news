@@ -1,26 +1,17 @@
 """
 Weekly news digest — fetches World, India, and Business headlines from
-GNews and emails them to yourself. Designed to run on a schedule via
-GitHub Actions (see .github/workflows/news-digest.yml).
+GNews and writes them to digest.txt. Designed to run on a schedule via
+GitHub Actions (see .github/workflows/news-digest.yml), which commits
+digest.txt back to the repo so it's readable at a permanent raw URL.
 
-Required environment variables (set as GitHub Actions secrets):
+Required environment variable (set as a GitHub Actions secret):
   GNEWS_API_KEY   - your GNews API key
-  GMAIL_USER      - the Gmail address sending the email
-  GMAIL_APP_PASS  - a Gmail App Password (not your normal password —
-                    generate one at https://myaccount.google.com/apppasswords)
-  RECIPIENT_EMAIL - the email address that should receive the digest
-                    (can be the same as GMAIL_USER, i.e. email yourself)
 """
 
 import os
-import smtplib
 import requests
-from email.mime.text import MIMEText
 
 GNEWS_API_KEY = os.environ["GNEWS_API_KEY"]
-GMAIL_USER = os.environ["GMAIL_USER"]
-GMAIL_APP_PASS = os.environ["GMAIL_APP_PASS"]
-RECIPIENT_EMAIL = os.environ["RECIPIENT_EMAIL"]
 
 BASE_URL = "https://gnews.io/api/v4/top-headlines"
 
@@ -54,17 +45,6 @@ def build_digest_body():
     return "\n\n".join(sections)
 
 
-def send_email(body):
-    msg = MIMEText(body)
-    msg["Subject"] = "Your Sunday News Digest"
-    msg["From"] = GMAIL_USER
-    msg["To"] = RECIPIENT_EMAIL
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(GMAIL_USER, GMAIL_APP_PASS)
-        server.send_message(msg)
-
-
 def write_digest_file(body, path="digest.txt"):
     with open(path, "w") as f:
         f.write(body)
@@ -73,8 +53,7 @@ def write_digest_file(body, path="digest.txt"):
 def main():
     body = build_digest_body()
     write_digest_file(body)
-    send_email(body)
-    print("Digest written and emailed successfully.")
+    print("Digest written successfully.")
     print(body)
 
 
