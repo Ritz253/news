@@ -9,6 +9,7 @@ Required environment variable (set as a GitHub Actions secret):
 """
 
 import os
+import time
 import requests
 
 GNEWS_API_KEY = os.environ["GNEWS_API_KEY"]
@@ -42,6 +43,7 @@ def build_digest_body():
         else:
             lines = "(no articles returned)"
         sections.append(f"{label}\n{'-' * len(label)}\n{lines}")
+        time.sleep(5)  # small pause to avoid rapid-fire rate limiting
     return "\n\n".join(sections)
 
 
